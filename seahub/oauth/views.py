@@ -5,6 +5,8 @@ import sys
 import logging
 from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext as _
+from django.core.cache import cache
+from urllib.parse import parse_qs
 
 from seaserv import seafile_api, ccnet_api
 
@@ -110,6 +112,10 @@ def oauth_login(request):
     request.session['oauth_state'] = state
     request.session['oauth_redirect'] = request.GET.get(
         auth.REDIRECT_FIELD_NAME, '/')
+
+    query_string = request.META.get('QUERY_STRING', '')
+    cache.set(state, query_string, 24 * 60 * 60)
+
     return HttpResponseRedirect(authorization_url)
 
 
@@ -232,7 +238,15 @@ def oauth_callback(request):
                 seafile_api.set_role_quota(role, quota)
 
     # generate auth token for Seafile client
-    api_token = get_api_token(request)
+    state = request.GET.get('state')
+    query_string = cache.get(state)
+    query_dict = parse_qs(query_string)
+    formated_query_dict = {}
+    if 'QtWebEngine'.lower() in request.META.get('HTTP_USER_AGENT').lower():
+        for k, v in query_dict.items():
+            formated_query_dict[k] = v[0]
+
+    api_token = get_api_token(request, client_param_dict=formated_query_dict)
 
     # redirect user to home page
     response = HttpResponseRedirect(request.session.get('oauth_redirect', '/'))

@@ -204,7 +204,21 @@ def get_token_v2(request, username, platform, device_id, device_name,
         username, platform, device_id, device_name,
         client_version, platform_version, get_client_ip(request))
 
-def get_api_token(request, keys=None, key_prefix='shib_'):
+def get_api_token(request, keys=None, key_prefix='shib_', client_param_dict={}):
+
+    if client_param_dict:
+
+        platform = client_param_dict.get('%splatform' % key_prefix, '')
+        device_id = client_param_dict.get('%sdevice_id' % key_prefix, '')
+        device_name = client_param_dict.get('%sdevice_name' % key_prefix, '')
+        client_version = client_param_dict.get('%sclient_version' % key_prefix, '')
+        platform_version = client_param_dict.get('%splatform_version' % key_prefix, '')
+
+        token = get_token_v2(request, request.user.username, platform,
+                             device_id, device_name, client_version,
+                             platform_version)
+
+        return token
 
     if not keys:
         keys = [

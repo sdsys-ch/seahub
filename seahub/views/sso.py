@@ -32,7 +32,9 @@ def sso(request):
         return HttpResponseRedirect(next_page)
 
     # send next page back to other views
-    next_param = '?%s=' % REDIRECT_FIELD_NAME + urlquote(next_page)
+    query_string = request.META.get('QUERY_STRING', '')
+    next_param = '?%s=%s&%s' % (REDIRECT_FIELD_NAME, urlquote(next_page), query_string)
+
     if getattr(settings, 'ENABLE_ADFS_LOGIN', False):
         return HttpResponseRedirect(reverse('saml2_login') + next_param)
 
