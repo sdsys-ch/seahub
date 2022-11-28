@@ -567,11 +567,6 @@ class NotificationsView(APIView):
                 return Response(error_result_not_found, status=400)
 
             share = remote_shares[0]
-            if share.provider_id != provider_id:
-                error_msg = "OCM share with provider id {} not found.".format(provider_id)
-                error_result_not_found['validationErrors'][0]['name'] = 'providerID'
-                return Response(error_result_not_found, status=400)
-
             share.received = True
             share.save()
 
