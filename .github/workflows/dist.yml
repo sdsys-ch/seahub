@@ -3,8 +3,9 @@ name: Seahub Dist CI
 on:
   push:
     branches:
-      - master
+      - "master"
       - "9.0"
+      - "10.0-dependency"
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
