@@ -28,7 +28,6 @@ const propTypes = {
   onFreezedItem: PropTypes.func.isRequired,
   onUnfreezedItem: PropTypes.func.isRequired,
   onItemUnshare: PropTypes.func.isRequired,
-  onItemDetails: PropTypes.func,
   onItemRename: PropTypes.func,
   onItemDelete: PropTypes.func,
   onMonitorRepo: PropTypes.func
@@ -163,9 +162,6 @@ class SharedRepoListItem extends React.Component {
       case 'Folder Permission':
         this.onItemFolderPermissionToggle();
         break;
-      case 'Details':
-        this.onItemDetails();
-        break;
       case 'Share':
         this.onItemShare();
         break;
@@ -244,10 +240,6 @@ class SharedRepoListItem extends React.Component {
 
   onHistorySettingToggle = () => {
     this.setState({isHistorySettingDialogShow: !this.state.isHistorySettingDialogShow});
-  };
-
-  onItemDetails = () => {
-    this.props.onItemDetails(this.props.repo);
   };
 
   onItemShare = (e) => {
@@ -329,9 +321,6 @@ class SharedRepoListItem extends React.Component {
       case 'Folder Permission':
         translateResult = gettext('Folder Permission');
         break;
-      case 'Details':
-        translateResult = gettext('Details');
-        break;
       case 'Unshare':
         translateResult = gettext('Unshare');
         break;
@@ -407,7 +396,7 @@ class SharedRepoListItem extends React.Component {
               const monitorOp = repo.monitored ? 'Unwatch File Changes' : 'Watch File Changes';
               operations.push(monitorOp);
             }
-            operations.push('Divider', 'History Setting', 'Details');
+            operations.push('Divider', 'History Setting');
             if (Utils.isDesktop()) {
               operations.push('Advanced');
             }
