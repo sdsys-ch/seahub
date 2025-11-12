@@ -48,5 +48,32 @@ fileExt: {% if fileext %}'{{fileext|escapejs }}'{% else %}''{% endif %},
 </script>
 <script type="text/javascript" src="{{MEDIA_URL}}js/pdf/build/pdf.js"></script>
 <script type="text/javascript" src="{{MEDIA_URL}}js/pdf/web/viewer.js"></script>
+<script type="text/javascript">
+  // Safari workaround: Wait for PDF viewer DOM to be ready before initializing
+  (function() {
+    var checkDOMReady = function() {
+      // Check if critical elements exist
+      return document.getElementById('viewerContainer') &&
+             document.getElementById('viewer') &&
+             document.getElementById('toolbarViewer');
+    };
+
+    var initPDF = function() {
+      if (window.PDFViewerApplication && !window.PDFViewerApplication.initialized && checkDOMReady()) {
+        document.dispatchEvent(new Event('DOMContentLoaded', { bubbles: true, cancelable: true }));
+        return true;
+      }
+      return false;
+    };
+
+    // Poll until DOM is ready
+    var attempts = 0;
+    var checkInterval = setInterval(function() {
+      if (initPDF() || ++attempts > 40) { // 40 * 50ms = 2 seconds max
+        clearInterval(checkInterval);
+      }
+    }, 50);
+  })();
+</script>
 {% endif %}
 {% endblock %}
